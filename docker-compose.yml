@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  front:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: ${VITE_API_BASE}
+        VITE_SPOTIFY_ID: ${VITE_SPOTIFY_ID}
+        VITE_REDIRECT_URI: ${VITE_REDIRECT_URI}
+    ports:
+      - "80:80"
+    networks:
+      - currently-playing
+
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    expose:
+      - 3000
+    networks:
+      - currently-playing
+    environment:
+      SPOTIFY_SECRET: ${SPOTIFY_SECRET}
+      VITE_SPOTIFY_ID: ${VITE_SPOTIFY_ID}
+      VITE_REDIRECT_URI: ${VITE_REDIRECT_URI}
+
+networks:
+  currently-playing:
