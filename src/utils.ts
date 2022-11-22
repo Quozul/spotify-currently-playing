@@ -18,6 +18,7 @@ export function fetchRefreshToken(refreshToken) {
 						token.set({
 							...json,
 							expires_at,
+							refresh_token: refreshToken,
 						});
 					});
 			} else {
