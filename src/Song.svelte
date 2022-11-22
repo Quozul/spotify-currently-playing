@@ -1,11 +1,9 @@
 <script lang="ts">
 	import {writable} from "svelte/store";
 	import {onDestroy} from "svelte";
+	import {token} from "./store/store";
 
 	const currentlyPlaying = writable(null);
-
-	const search = new URLSearchParams(window.location.search);
-	const token = search.get("access_token");
 
 	let interval: number = null;
 
@@ -15,11 +13,10 @@
         }
     });
 
-	if (search.has("access_token")) {
-		if (token) {
-			setInterval(fetchPlayer, 5000, token);
-			fetchPlayer(token);
-		}
+	const tok = $token?.access_token;
+	if (tok) {
+        setInterval(fetchPlayer, 5000, tok);
+        fetchPlayer(tok);
 	}
 
 	function fetchPlayer(token: string) {

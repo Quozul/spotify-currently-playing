@@ -2,72 +2,44 @@
 	import Song from "./Song.svelte";
 	import Login from "./Login.svelte";
 	import {token} from "./store/store";
-
-	const search = new URLSearchParams(window.location.search);
-	const accessToken = search.get("access_token");
-	const refreshToken = search.get("refresh_token");
-	const expiresAt = parseInt(search.get("expires_at"));
+	import Copy from "./Share.svelte";
+	import {fetchRefreshToken} from "./utils";
 
 	let refreshTimeout = null;
 
-	function fetchRefreshToken() {
-		console.log(`Refreshing token...`);
-		fetch(import.meta.env.VITE_API_BASE + "refresh", {
-			body: JSON.stringify({refreshToken}),
-			method: "post",
-			headers: {
-				"content-type": "application/json",
-				"accept": "application/json",
-			},
-		})
-			.then(res => {
-				if (res.ok) {
-					res.json()
-						.then(json => {
-							$token = json;
-						});
-				} else {
-					window.location.search = "";
-				}
-			});
-    }
-
 	// If store has a refresh token
-	$: if ($token && $token.refresh_token) {
-        // Clear previous timout
+	$: if ($token && $token.refresh_token && $token.expires_at) {
 		if (refreshTimeout) {
-			clearTimeout(refreshTimeout);
+			clearTimeout(refreshTimeout); // Clear previous timout
         }
 
-		const expiresIn = Math.max(0, expiresAt - Date.now());
-		refreshTimeout = setTimeout(fetchRefreshToken, expiresIn);
+		// Create timeout to refresh token
+		const expiresIn = Math.max(0, $token.expires_at - Date.now());
+		refreshTimeout = setTimeout(fetchRefreshToken, expiresIn, $token.refresh_token);
 		console.log(`Refreshing token in ${expiresIn/1000} seconds.`);
 	}
 
-	// If token is in store
-	$: if ($token) {
-		const search = new URLSearchParams(window.location.search);
-		const accessToken = search.get("access_token");
+	// If a refresh token is in hash, use it to get a new one
+	$: if (window.location.hash.length > 1) {
+		const refreshToken = window.location.hash.substring(1);
+		console.log("Found refresh token.", refreshToken);
+		window.location.hash = "";
+		fetchRefreshToken(refreshToken);
+    }
 
-		// If previous token is different from the stored token
-		if (accessToken !== $token.access_token) {
-			console.log("Restored previous token.");
-			const expiresAt = Date.now() + $token.expires_in * 1000;
-
-			const params = new URLSearchParams();
-			params.set("access_token", $token.access_token);
-			params.set("refresh_token", $token.refresh_token);
-			params.set("expires_at", expiresAt.toString());
-
-			window.location.search = params.toString();
-		}
-	}
+	// If token in store is invalid
+	$: if ($token?.error) {
+        $token = null; // Clear token if error
+    }
 </script>
 
 <div class="flex justify-center items-center min-h-screen">
-    {#if !accessToken}
+    {#if !$token?.access_token}
         <Login/>
     {:else}
-        <Song/>
+        <div class="flex flex-col gap-5">
+            <Copy/>
+            <Song/>
+        </div>
     {/if}
 </div>
