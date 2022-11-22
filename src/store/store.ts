@@ -7,6 +7,8 @@ export type Token = {
 	refresh_token: string,
 	scope: string,
 	token_type: string,
+	expires_at?: number,
+	error?: string,
 }
 
 export const token: Writable<Token | null> = createStoreEntry("token", null, localStorage);
