@@ -24,5 +24,5 @@ WORKDIR /app
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./nginx /etc/nginx
 
-EXPOSE 80
 ENV PORT 80
+EXPOSE $PORT
