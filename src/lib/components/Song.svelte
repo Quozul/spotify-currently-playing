@@ -1,9 +1,25 @@
 <script lang="ts">
-import { onMount } from "svelte";
+import { onDestroy, onMount } from "svelte";
 const { uuid } = $props();
 
-let currentlyPlaying = $state<any>(null);
+type CurrentSong = {
+  artworkUrl: string,
+  name: string,
+  artists: string,
+  isPlaying: boolean,
+  progress: number,
+  duration: number,
+}
+
+let currentlyPlaying = $state<CurrentSong | null>(null);
 let interval = $state<number | null>(null);
+
+onDestroy(() => {
+	if (interval) {
+		clearInterval(interval);
+		currentlyPlaying = null;
+	}
+});
 
 onMount(() => {
 	interval = setInterval(fetchPlayer, 5000);
@@ -18,7 +34,11 @@ onMount(() => {
 		})
 			.then((res) => res.json())
 			.then((json) => {
-				currentlyPlaying = json;
+				if ("message" in json) {
+					currentlyPlaying = null;
+				} else {
+					currentlyPlaying = json;
+				}
 			})
 			.catch(() => {
 				currentlyPlaying = null;
@@ -31,12 +51,17 @@ let artist = $state("");
 let image = $state("");
 let isPlaying = $state(false);
 
+const formatter = new Intl.ListFormat(navigator.language, {
+  style: "long",
+  type: "disjunction",
+});
+
 $effect(() => {
+	isPlaying = currentlyPlaying !== null;
 	if (currentlyPlaying) {
-		name = currentlyPlaying.item.name;
-		artist = currentlyPlaying.item.artists[0].name;
-		image = currentlyPlaying.item.album.images[0].url;
-		isPlaying = currentlyPlaying.is_playing;
+		name = currentlyPlaying.name;
+		artist = formatter.format(currentlyPlaying.artists);
+		image = currentlyPlaying.artworkUrl;
 	}
 });
 

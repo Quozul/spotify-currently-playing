@@ -1,21 +1,122 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import {
-	POSTGRES_DATABASE,
-	POSTGRES_PASSWORD,
-	POSTGRES_USER,
-	SPOTIFY_SECRET,
-} from "$env/static/private";
+import { SPOTIFY_SECRET } from "$env/static/private";
 import { PUBLIC_SPOTIFY_ID } from "$env/static/public";
-import postgres from "postgres";
+import { sql } from "$lib/db";
 
-const sql = postgres({
-	username: POSTGRES_USER,
-	password: POSTGRES_PASSWORD,
-	database: POSTGRES_DATABASE,
-});
 const authorizationToken = btoa(`${PUBLIC_SPOTIFY_ID}:${SPOTIFY_SECRET}`);
 
-export const GET: RequestHandler = async ({ params, url }) => {
+interface SpotifyResponse {
+	device: {
+		id: string;
+		is_active: boolean;
+		is_private_session: boolean;
+		is_restricted: boolean;
+		name: string;
+		type: string;
+		volume_percent: number;
+		supports_volume: boolean;
+	};
+	repeat_state: string;
+	shuffle_state: boolean;
+	context: {
+		type: string;
+		href: string;
+		external_urls: {
+			spotify: string;
+		};
+		uri: string;
+	};
+	timestamp: number;
+	progress_ms: number;
+	is_playing: boolean;
+	item: {
+		album: {
+			album_type: string;
+			total_tracks: number;
+			available_markets: string[];
+			external_urls: {
+				spotify: string;
+			};
+			href: string;
+			id: string;
+			images: {
+				url: string;
+				height: number;
+				width: number;
+			}[];
+			name: string;
+			release_date: string;
+			release_date_precision: string;
+			restrictions?: {
+				reason: string;
+			};
+			type: string;
+			uri: string;
+			artists: {
+				external_urls: {
+					spotify: string;
+				};
+				href: string;
+				id: string;
+				name: string;
+				type: string;
+				uri: string;
+			}[];
+		};
+		artists: {
+			external_urls: {
+				spotify: string;
+			};
+			href: string;
+			id: string;
+			name: string;
+			type: string;
+			uri: string;
+		}[];
+		available_markets: string[];
+		disc_number: number;
+		duration_ms: number;
+		explicit: boolean;
+		external_ids: {
+			isrc: string;
+			ean: string;
+			upc: string;
+		};
+		external_urls: {
+			spotify: string;
+		};
+		href: string;
+		id: string;
+		is_playable: boolean;
+		linked_from?: Record<string, unknown>;
+		restrictions?: {
+			reason: string;
+		};
+		name: string;
+		popularity: number;
+		preview_url: string;
+		track_number: number;
+		type: string;
+		uri: string;
+		is_local: boolean;
+	};
+	currently_playing_type: string;
+	actions: {
+		interrupting_playback: boolean;
+		pausing: boolean;
+		resuming: boolean;
+		seeking: boolean;
+		skipping_next: boolean;
+		skipping_prev: boolean;
+		toggling_repeat_context: boolean;
+		toggling_shuffle: boolean;
+		toggling_repeat_track: boolean;
+		transferring_playback: boolean;
+	};
+}
+
+
+export const GET: RequestHandler = async ({ url }) => {
 	const uuid = url.searchParams.get("uuid");
 
 	if (!uuid) {
@@ -101,8 +202,15 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		);
 	}
 
-	const currentlyPlayingData = await currentlyPlayingRes.json();
+	const currentlyPlayingData: SpotifyResponse = await currentlyPlayingRes.json();
 
 	// 5. Return the currently playing media data.
-	return json(currentlyPlayingData);
+	return json({
+		artworkUrl: currentlyPlayingData.item.album.images[0].url,
+		name: currentlyPlayingData.item.name,
+		artists: currentlyPlayingData.item.artists.map(artist => artist.name),
+		isPlaying: currentlyPlayingData.is_playing,
+		progress: currentlyPlayingData.progress_ms,
+		duration: currentlyPlayingData.item.duration_ms,
+	});
 };

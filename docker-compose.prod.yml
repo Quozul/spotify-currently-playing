@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:17-alpine
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+      POSTGRES_DB: postgres
+
+    volumes:
+      - spotify_currently_playing_postgres:/var/lib/postgresql/data
+
+  app:
+    build: .
+    image: registry.quozul.dev/spotify_currently_playing
+
+    depends_on:
+      - db
+
+    deploy:
+      replicas: 1
+      mode: replicated
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.spotify.loadbalancer.server.port=3000"
+        - "traefik.http.routers.spotify.rule=Host(`spotify-currently-playing.quozul.dev`)"
+        - "traefik.docker.network=traefik_proxy"
+
+    networks:
+      - default
+      - traefik
+
+networks:
+  traefik:
+    name: traefik_proxy
+    external: true
+
+volumes:
+  spotify_currently_playing_postgres: {}

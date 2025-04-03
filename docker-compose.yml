@@ -7,3 +7,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespw
       POSTGRES_DB: postgres
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db

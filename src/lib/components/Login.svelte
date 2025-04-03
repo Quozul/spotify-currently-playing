@@ -33,5 +33,5 @@ onMount(() => {
 
 <a class="bg-spot rounded-full font-bold inline-block active:scale-95 hover:scale-105 transition-all"
    href="{authorizeUrl.href}">
-    <img class="h-16" src="/Spotify_Logo_RGB_White.png"/>
+    <img alt="Spotify Logo" class="h-16" src="/Spotify_Logo_RGB_White.png"/>
 </a>

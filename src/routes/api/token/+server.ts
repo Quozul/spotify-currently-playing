@@ -1,18 +1,7 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import {
-	SPOTIFY_SECRET,
-	POSTGRES_USER,
-	POSTGRES_PASSWORD,
-	POSTGRES_DATABASE,
-} from "$env/static/private";
+import { SPOTIFY_SECRET } from "$env/static/private";
 import { PUBLIC_REDIRECT_URI, PUBLIC_SPOTIFY_ID } from "$env/static/public";
-import postgres from "postgres";
-
-const sql = postgres({
-	username: POSTGRES_USER,
-	password: POSTGRES_PASSWORD,
-	database: POSTGRES_DATABASE,
-});
+import { sql } from "$lib/db";
 
 const authorizationToken = btoa(`${PUBLIC_SPOTIFY_ID}:${SPOTIFY_SECRET}`);
 
