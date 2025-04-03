@@ -115,7 +115,6 @@ interface SpotifyResponse {
 	};
 }
 
-
 export const GET: RequestHandler = async ({ url }) => {
 	const uuid = url.searchParams.get("uuid");
 
@@ -202,13 +201,14 @@ export const GET: RequestHandler = async ({ url }) => {
 		);
 	}
 
-	const currentlyPlayingData: SpotifyResponse = await currentlyPlayingRes.json();
+	const currentlyPlayingData: SpotifyResponse =
+		await currentlyPlayingRes.json();
 
 	// 5. Return the currently playing media data.
 	return json({
 		artworkUrl: currentlyPlayingData.item.album.images[0].url,
 		name: currentlyPlayingData.item.name,
-		artists: currentlyPlayingData.item.artists.map(artist => artist.name),
+		artists: currentlyPlayingData.item.artists.map((artist) => artist.name),
 		isPlaying: currentlyPlayingData.is_playing,
 		progress: currentlyPlayingData.progress_ms,
 		duration: currentlyPlayingData.item.duration_ms,
