@@ -55,9 +55,9 @@ let isPlaying = $state(false);
 
 $effect(() => {
 	if (currentlyPlaying) {
-		const formatter = new Intl.ListFormat(navigator?.language, {
+		const formatter = new Intl.ListFormat(navigator.language, {
 			style: "long",
-			type: "disjunction",
+			type: "conjunction",
 		});
 
 		name = currentlyPlaying.name;
