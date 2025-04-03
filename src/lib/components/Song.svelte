@@ -54,7 +54,6 @@ let image = $state("");
 let isPlaying = $state(false);
 
 $effect(() => {
-	isPlaying = currentlyPlaying !== null;
 	if (currentlyPlaying) {
 		const formatter = new Intl.ListFormat(navigator?.language, {
 			style: "long",
@@ -64,18 +63,21 @@ $effect(() => {
 		name = currentlyPlaying.name;
 		artist = formatter.format(currentlyPlaying.artists);
 		image = currentlyPlaying.artworkUrl;
+        isPlaying = currentlyPlaying.isPlaying;
 	}
 });
 </script>
 
 <style>
     .container {
-        width: 350px;
+        width: 0;
         height: 70px;
+        opacity: 0;
     }
 
     .active {
         width: 350px;
+        opacity: 1;
     }
 
     .img {
