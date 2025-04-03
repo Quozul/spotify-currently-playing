@@ -12,4 +12,5 @@ const options = {
 	password: POSTGRES_PASSWORD,
 	database: POSTGRES_DB,
 };
+
 export const sql = postgres(options);

@@ -63,7 +63,7 @@ $effect(() => {
 		name = currentlyPlaying.name;
 		artist = formatter.format(currentlyPlaying.artists);
 		image = currentlyPlaying.artworkUrl;
-        isPlaying = currentlyPlaying.isPlaying;
+		isPlaying = currentlyPlaying.isPlaying;
 	}
 });
 </script>
