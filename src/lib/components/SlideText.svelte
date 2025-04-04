@@ -21,7 +21,7 @@ let { children } = $props();
     }
 </style>
 
-<div class="whitespace-nowrap fade"
+<div class="whitespace-nowrap"
     class:slide={shouldSlide}
     style="--width: {containerWidth - elementWidth}px;" bind:clientWidth={containerWidth}>
     <div class="inline-block" bind:clientWidth={elementWidth}>

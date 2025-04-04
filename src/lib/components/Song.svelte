@@ -92,12 +92,10 @@ $effect(() => {
     <div class="flex">
         <img src="{image}" alt="artwork" class="img rounded-xl"/>
 
-        <div class="flex-grow p-2 overflow-hidden relative">
-            <h2 class="artist bg-gradient-to-r from-purple-800 to-red-800 bg-clip-text text-transparent font-black uppercase">
-                <SlideText>
-                    {artist}
-                </SlideText>
-            </h2>
+        <div class="flex-grow p-2 overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-800 to-red-800 bg-clip-text text-transparent font-black uppercase truncate">
+                {artist}
+            </div>
 
             <div class="font-bold text-xl overflow-hidden text-white">
                 <SlideText>
