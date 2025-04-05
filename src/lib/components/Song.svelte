@@ -69,26 +69,73 @@ $effect(() => {
 </script>
 
 <style>
-    .container {
-        width: 0;
-        height: 70px;
-        opacity: 0;
+    :root {
+        --cover-size: 70px;
+        --full-width: 350px;
     }
 
-    .active {
-        width: 350px;
-        opacity: 1;
+    .show {
+        animation: show 1s forwards;
+    }
+
+    .hide {
+        animation: hide 1s forwards;
     }
 
     .img {
-        width: 70px;
-        height: 70px;
-        z-index: 100;
+        width: var(--cover-size);
+        height: var(--cover-size);
+    }
+
+    @keyframes show {
+        0% {
+            opacity: 0;
+            height: var(--cover-size);
+            width: var(--cover-size);
+            transform: translateY(calc(var(--cover-size) / 2));
+        }
+
+        50% {
+            opacity: 1;
+            height: var(--cover-size);
+            width: var(--cover-size);
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 1;
+            height: var(--cover-size);
+            width: var(--full-width);
+        }
+    }
+
+    @keyframes hide {
+        0% {
+            opacity: 1;
+            height: var(--cover-size);
+            width: var(--full-width);
+        }
+
+        50% {
+            opacity: 1;
+            height: var(--cover-size);
+            width: var(--cover-size);
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 0;
+            height: var(--cover-size);
+            width: var(--cover-size);
+            transform: translateY(calc(var(--cover-size) / 2));
+        }
     }
 </style>
 
-<div class="shadow-black/50 shadow-xl rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 container transition-all duration-500"
-     class:active={isPlaying}>
+<div class="shadow-black/50 shadow-xl rounded-xl bg-gradient-to-br from-slate-900 to-slate-800"
+     class:show={isPlaying}
+     class:hide={!isPlaying}
+>
     <div class="flex">
         <img src="{image}" alt="artwork" class="img rounded-xl"/>
 
