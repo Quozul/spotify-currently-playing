@@ -15,10 +15,9 @@ WORKDIR /app
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/build ./build
-COPY .env.production ./
 
 RUN npm ci --omit dev
 
 EXPOSE 3000
 
-CMD ["node", "--env-file=.env.production", "build/index.js"]
+CMD ["node", "build/index.js"]
